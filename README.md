@@ -1,4 +1,4 @@
-# SeededAlignment.jl
+# SeededAlignment.jl (now with functional_filter_and_align)
 
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://MurrellGroup.github.io/SeededAlignment.jl/dev/)
 [![Build Status](https://github.com/MurrellGroup/SeededAlignment.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/MurrellGroup/SeededAlignment.jl/actions/workflows/CI.yml?query=branch%3Amain)
@@ -27,6 +27,8 @@ Pkg.add(url="https://github.com/MurrellGroup/SeededAlignment.jl")
 -**`clean_frameshifts`** - cleans pairwise (or multiple) sequence alignments of frameshift errors if they contain a trusted reference.
 
 -**`nw_align`** - frameshift robust codon-level Needleman-Wunsch algorithm that detects and cleans frameshift errors.
+
+-**`filter_and_align`** - filter sequences with frameshift errors and codon align functional sequences. 
 
 **Note:** **`nw_align`** and **`seed_chain_align`** also support De-Novo nucleotide alignments. 
 
@@ -109,3 +111,27 @@ write_fasta("example_output.fasta", msa_codon_alignment, seq_names = seq_names)
 ```
 Note that the resulting alignment will be biased by the reference sequence and might need to be supplemented if the
 intended alignment is complex.  
+
+---
+
+### filter_and_align
+
+---
+
+This method produces a reference-guided codon multiple sequence alignment for those sequences whose 
+longest open reading frame is free of frameshift errors and matches the reference to a user specified theshold.  
+
+```julia
+using SeededAlignment
+
+# extract the longest open reading frame from each query sequence and codon align to a reference.
+# keep those ORFs that have no reading frame errors and that match the reference to a user supplied threshold
+# otherwise reject and annotate the sequence name with the rejection reason
+# On completion, perform a codon aware alignment of passing queries and write aligned passing functionals and
+# unaligned rejects to fasta files. Also populate a dataframe with housekeeping entries.
+filter_and_align(ref_filename, query_filename, functionals_filename, rejects_filename, hk)
+@show hk
+# write alignment to fasta file
+```
+
+
