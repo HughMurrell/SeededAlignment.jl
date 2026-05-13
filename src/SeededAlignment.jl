@@ -1,6 +1,6 @@
 module SeededAlignment
 
-using FASTX
+using FASTX,DataFrames,CSV,StatsBase
 # export dna sequence datatype
 using BioSequences
 export LongDNA
@@ -19,7 +19,10 @@ include("seq_alignment/needleman_wunsch.jl")
 include("seq_alignment/seeding.jl")
 include("seq_alignment/seed_chain_align.jl")
 include("seq_alignment/msa_codon_align.jl")
-export 
+include("functional_filter/functional_filter.jl")
+export
+    # Functional Filter
+    filter_and_align
     # Alignment Methods
     msa_codon_align, seed_chain_align, nw_align,
     # Remove frameshift mutations/noise from a Pairwise Codon Alignment

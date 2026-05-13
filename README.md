@@ -118,9 +118,9 @@ intended alignment is complex.
 
 ---
 
-This method produces a reference-guided codon multiple sequence alignment for those sequences whose 
+This method produces a reference-guided codon multiple sequence alignment in fasta format for those sequences whose 
 longest open reading frame is free of frameshift errors and matches the reference to a user specified theshold.  
-
+Sequences failing the filter are annotated and written to a rejection fasta file.
 ```julia
 using SeededAlignment
 
@@ -129,9 +129,9 @@ using SeededAlignment
 # otherwise reject and annotate the sequence name with the rejection reason
 # On completion, perform a codon aware alignment of passing queries and write aligned passing functionals and
 # unaligned rejects to fasta files. Also populate a dataframe with housekeeping entries.
-filter_and_align(ref_filename, query_filename, functionals_filename, rejects_filename, hk)
+match=0.7
+hk = filter_and_align(ref_filename, query_filename, functionals_filename, rejects_filename, match_thresh=match)
 @show hk
-# write alignment to fasta file
 ```
 
 
