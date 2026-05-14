@@ -62,7 +62,7 @@ function filter_and_align(ref_file, query_file, functionals_file, nonfunctionals
     reject_nams=[]
     keeps=(q->all(x -> x in (DNA_A, DNA_T, DNA_C, DNA_G), q)).(seqs)
     ambig_count=length(seqs)-sum(keeps)
-    @show start_count, ambig_count, sum(keeps)
+    @show query_file, ambig_count
     reject_seqs=vcat(reject_seqs,seqs[(!).(keeps)])
     reject_nams=vcat(reject_nams,(x->x*" ambiguousSymbols-reject").(nams[(!).(keeps)]))
     nams=nams[keeps]
@@ -98,7 +98,7 @@ function filter_and_align(ref_file, query_file, functionals_file, nonfunctionals
     nams=nams[keeps]
     trim_ali_seqs=trim_ali_seqs[keeps]
     match_ratios=(x->sum(collect(trim_ali_seqs[1]).==(collect(x)))/length(x)).(trim_ali_seqs)
-    @show minimum(match_ratios), maximum(match_ratios), mean(match_ratios)
+    @show query_file, minimum(match_ratios), maximum(match_ratios), mean(match_ratios)
     keeps=match_ratios.>=match_thresh
     bad_match_count=sum((!).(keeps))
     reject_seqs=vcat(reject_seqs,trim_ali_seqs[(!).(keeps)])

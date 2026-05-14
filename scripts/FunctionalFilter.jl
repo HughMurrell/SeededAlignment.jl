@@ -16,8 +16,6 @@ ref_file=ARGS[1]
 in_file=ARGS[2]
 min_match=parse(Float64,ARGS[3])
 @show min_match
-hk=DataFrame(sample=[], sequences=[], functional=[], non_functional=[],
-                    frameshift_error=[], late_start_codon=[], early_stop_codon=[], bad_match=[])
 hk = filter_and_align(ref_file,in_file,"functionals.fasta","nonfunctionals.fasta", match_thresh=min_match)
 @show hk
 
