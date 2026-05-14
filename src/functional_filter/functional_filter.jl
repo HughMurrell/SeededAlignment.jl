@@ -5,6 +5,14 @@ end
 function degap(s::LongDNA{4})
     return filter!(!isgap,s)
 end
+
+function remove_ambigs(s::String)
+    return replace(s,"N"=>"")
+end
+     
+function remove_ambigs(s::LongDNA{4})
+    return filter!(!isambiguous,s)
+end
      
 function longest_open_reading_frame(cons)
     cons=degap(cons)
@@ -101,7 +109,8 @@ function filter_and_align(ref_file, query_file, functionals_file, nonfunctionals
     seq_loss = (start_count - end_count + 1) / start_count
     @show query_file, seq_loss * 100
     if length(trim_ali_seqs) > 1
-        trim_ali_seqs = msa_codon_align(ref_seq, degap.(trim_ali_seqs[2:end]), scoring=score_params, verbose=false)
+        trim_ali_seqs = msa_codon_align(ref_seq, remove_ambigs.(degap.(trim_ali_seqs[2:end])),
+                                            scoring=score_params, verbose=false)
     end
     write_fasta(functionals_file,trim_ali_seqs,seq_names=nams)
     if length(reject_seqs) > 0
