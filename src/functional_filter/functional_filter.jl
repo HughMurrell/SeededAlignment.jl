@@ -49,8 +49,8 @@ end
 
 function filter_and_align(ref_file, query_file, functionals_file, nonfunctionals_file;
             match_thresh=0.7)
-    hk=DataFrame(sample=[], sequences=[], functional=[], non_functional=[], ambiguous=[],
-                    frameshift_error=[], late_start_codon=[], early_stop_codon=[], bad_match=[])
+    hk=DataFrame(sample=String[], sequences=Int[], functional=Int[], nonfunctional=Int[], ambiguous=Int[],
+                    frameshift=Int[], lateStartCodon=Int[], earlyStopCodon=Int[], badMatch=Int[], matchThresh=Float64[])
     score_params = ScoringScheme(edge_ext_begin = true, edge_ext_end = true )
     ref_nams, ref_seqs = read_fasta(ref_file)
     ref_nam=ref_nams[1]
@@ -64,7 +64,7 @@ function filter_and_align(ref_file, query_file, functionals_file, nonfunctionals
     ambig_count=length(seqs)-sum(keeps)
     @show start_count, ambig_count, sum(keeps)
     reject_seqs=vcat(reject_seqs,seqs[(!).(keeps)])
-    reject_nams=vcat(reject_nams,(x->x*"_ambiguous-symbols").(nams[(!).(keeps)]))
+    reject_nams=vcat(reject_nams,(x->x*" ambiguousSymbols-reject").(nams[(!).(keeps)]))
     nams=nams[keeps]
     seqs=seqs[keeps]
     for i in 1:length(seqs)
@@ -77,7 +77,7 @@ function filter_and_align(ref_file, query_file, functionals_file, nonfunctionals
     keeps=(x->count(==(DNA_N),collect(x))==0).(seqs)
     orf_reject_count=length(seqs)-sum(keeps)
     reject_seqs=vcat(reject_seqs,seqs[(!).(keeps)])
-    reject_nams=vcat(reject_nams,(x->x*"_frameshift").(nams[(!).(keeps)]))
+    reject_nams=vcat(reject_nams,(x->x*" frameshift-reject").(nams[(!).(keeps)]))
     nams=nams[keeps]
     seqs=seqs[keeps]
     nams=vcat([ref_nam],nams)
@@ -88,13 +88,13 @@ function filter_and_align(ref_file, query_file, functionals_file, nonfunctionals
     keeps=(x->(x[1:3]==dna"ATG")).(trim_ali_seqs)
     no_start_codon_count=length(trim_ali_seqs)-sum(keeps)
     reject_seqs=vcat(reject_seqs,trim_ali_seqs[(!).(keeps)])
-    reject_nams=vcat(reject_nams,(x->x*"_lateStart").(nams[(!).(keeps)]))
+    reject_nams=vcat(reject_nams,(x->x*" lateStart-reject").(nams[(!).(keeps)]))
     nams=nams[keeps]
     trim_ali_seqs=trim_ali_seqs[keeps]
     keeps=(x->(x[end-2:end]!=dna"---")).(trim_ali_seqs)
     no_stop_codon_count=length(trim_ali_seqs)-sum(keeps)
     reject_seqs=vcat(reject_seqs,trim_ali_seqs[(!).(keeps)])
-    reject_nams=vcat(reject_nams,(x->x*"_earlyStop").(nams[(!).(keeps)]))
+    reject_nams=vcat(reject_nams,(x->x*" earlyStop-reject").(nams[(!).(keeps)]))
     nams=nams[keeps]
     trim_ali_seqs=trim_ali_seqs[keeps]
     match_ratios=(x->sum(collect(trim_ali_seqs[1]).==(collect(x)))/length(x)).(trim_ali_seqs)
@@ -102,7 +102,7 @@ function filter_and_align(ref_file, query_file, functionals_file, nonfunctionals
     keeps=match_ratios.>=match_thresh
     bad_match_count=sum((!).(keeps))
     reject_seqs=vcat(reject_seqs,trim_ali_seqs[(!).(keeps)])
-    reject_nams=vcat(reject_nams,(x->x*"_badMatch").(nams[(!).(keeps)]))
+    reject_nams=vcat(reject_nams,(x->x*" badMatch-reject").(nams[(!).(keeps)]))
     nams=nams[keeps]
     trim_ali_seqs=trim_ali_seqs[keeps]
     end_count = length(trim_ali_seqs)
@@ -118,7 +118,7 @@ function filter_and_align(ref_file, query_file, functionals_file, nonfunctionals
         write_fasta(nonfunctionals_file,LongDNA{4}.(reject_seqs),seq_names=reject_nams)
     end
     hk_rec=[query_file,start_count,end_count-1,start_count-end_count+1,ambig_count,
-                orf_reject_count,no_start_codon_count,no_stop_codon_count,bad_match_count]
+                orf_reject_count,no_start_codon_count,no_stop_codon_count,bad_match_count,match_thresh]
     push!(hk,hk_rec)
     return hk
 end

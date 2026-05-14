@@ -7,7 +7,8 @@ Reads in a fasta file and returns a tuple of (seqnames, seqs).
         reader = FASTX.FASTA.Reader(open(filepath, "r"))
         fasta_in = [record for record in reader]
         close(reader)
-        seq_names = [String(FASTX.FASTA.identifier(rec)) for rec in fasta_in]
+        # seq_names = [String(FASTX.FASTA.identifier(rec)) for rec in fasta_in]
+        seq_names = [String(FASTX.FASTA.description(rec)) for rec in fasta_in]
         try
             dna_seqs = [LongDNA{4}(uppercase(String(FASTX.FASTA.sequence(rec)))) for rec in fasta_in]
             return seq_names, dna_seqs
