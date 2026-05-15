@@ -106,8 +106,8 @@ function filter_and_align(ref_file, query_file, functionals_file, nonfunctionals
     nams=nams[keeps]
     trim_ali_seqs=trim_ali_seqs[keeps]
     end_count = length(trim_ali_seqs)
-    seq_loss = (start_count - end_count + 1) / start_count
-    @show query_file, seq_loss * 100
+    seq_loss = floor( Int, 100 * (start_count - end_count + 1) / start_count )
+    @show query_file, seq_loss
     if length(trim_ali_seqs) > 1
         trim_ali_seqs = msa_codon_align(ref_seq, remove_ambigs.(degap.(trim_ali_seqs[2:end])),
                                             scoring=score_params, verbose=false)
@@ -117,8 +117,8 @@ function filter_and_align(ref_file, query_file, functionals_file, nonfunctionals
         # write_fasta(in_file*"_functionalrejects.fasta",degap.(reject_seqs),seq_names=reject_nams)
         write_fasta(nonfunctionals_file,LongDNA{4}.(reject_seqs),seq_names=reject_nams)
     end
-    hk_rec=[query_file,start_count,end_count-1,start_count-end_count+1,ambig_count,
-                orf_reject_count,no_start_codon_count,no_stop_codon_count,bad_match_count,match_thresh]
+    hk_rec=[basename(query_file),start_count,end_count-1,start_count-end_count+1,filterLoss,
+        ambig_count,orf_reject_count,no_start_codon_count,no_stop_codon_count,bad_match_count,match_thresh]
     push!(hk,hk_rec)
     return hk
 end
