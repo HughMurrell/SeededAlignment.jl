@@ -63,7 +63,7 @@ function filter_and_align(ref_file, query_file, functionals_file, nonfunctionals
     reject_nams=[]
     keeps=(q->all(x -> x in (DNA_A, DNA_T, DNA_C, DNA_G), q)).(seqs)
     ambig_count=length(seqs)-sum(keeps)
-    @show query_file, ambig_count
+    # @show query_file, ambig_count
     reject_seqs=vcat(reject_seqs,seqs[(!).(keeps)])
     reject_nams=vcat(reject_nams,(x->x*" ambiguousSymbols-reject").(nams[(!).(keeps)]))
     nams=nams[keeps]
@@ -99,7 +99,7 @@ function filter_and_align(ref_file, query_file, functionals_file, nonfunctionals
     nams=nams[keeps]
     trim_ali_seqs=trim_ali_seqs[keeps]
     match_ratios=(x->sum(collect(trim_ali_seqs[1]).==(collect(x)))/length(x)).(trim_ali_seqs)
-    @show query_file, minimum(match_ratios), maximum(match_ratios), mean(match_ratios)
+    # @show query_file, minimum(match_ratios), maximum(match_ratios), mean(match_ratios)
     keeps=match_ratios.>=match_thresh
     bad_match_count=sum((!).(keeps))
     reject_seqs=vcat(reject_seqs,trim_ali_seqs[(!).(keeps)])
@@ -108,7 +108,7 @@ function filter_and_align(ref_file, query_file, functionals_file, nonfunctionals
     trim_ali_seqs=trim_ali_seqs[keeps]
     end_count = length(trim_ali_seqs)
     seq_loss = floor( Int, 100 * (start_count - end_count + 1) / start_count )
-    @show query_file, seq_loss
+    println(" $(basename(query_file)) has  $(seq_loss)% functional filter loss")
     if length(trim_ali_seqs) > 1
         trim_ali_seqs = msa_codon_align(ref_seq, remove_ambigs.(degap.(trim_ali_seqs[2:end])),
                                             scoring=score_params, verbose=false)
