@@ -49,7 +49,7 @@ end
 
 function filter_and_align(ref_file, query_file, functionals_file, nonfunctionals_file;
             match_thresh=0.7)
-    hk=DataFrame(sample=String[], sequences=Int[], functional=Int[], nonfunctional=Int[], percentLost=Int[],
+    hk=DataFrame(sample=String[], reference=String[], sequences=Int[], functional=Int[], nonfunctional=Int[], percentLost=Int[],
         ambiguous=Int[],frameshift=Int[], lateStartCodon=Int[], earlyStopCodon=Int[],
         badMatch=Int[], matchThresh=Float64[])
     score_params = ScoringScheme(edge_ext_begin = true, edge_ext_end = true )
@@ -118,7 +118,8 @@ function filter_and_align(ref_file, query_file, functionals_file, nonfunctionals
         # write_fasta(in_file*"_functionalrejects.fasta",degap.(reject_seqs),seq_names=reject_nams)
         write_fasta(nonfunctionals_file,LongDNA{4}.(reject_seqs),seq_names=reject_nams)
     end
-    hk_rec=[basename(query_file),start_count,end_count-1,start_count-end_count+1,seq_loss,
+    hk_rec=[basename(query_file)[1:end-6],basename(ref_file)[1:end-6],
+        start_count,end_count-1,start_count-end_count+1,seq_loss,
         ambig_count,orf_reject_count,no_start_codon_count,no_stop_codon_count,bad_match_count,match_thresh]
     push!(hk,hk_rec)
     return hk
