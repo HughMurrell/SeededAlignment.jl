@@ -100,6 +100,10 @@ function filter_and_align(ref_file, query_file, functionals_file, nonfunctionals
     trim_ali_seqs=trim_ali_seqs[keeps]
     match_ratios=(x->sum(collect(trim_ali_seqs[1]).==(collect(x)))/length(x)).(trim_ali_seqs)
     # @show query_file, minimum(match_ratios), maximum(match_ratios), mean(match_ratios)
+    match_ratios=(x->round(x, sigdigits=3)).(match_ratios)
+    for i in 1:length(nams)
+        nams[i]=nams[i] * " match=$(match_ratios[i])"
+    end
     keeps=match_ratios.>=match_thresh
     bad_match_count=sum((!).(keeps))
     reject_seqs=vcat(reject_seqs,trim_ali_seqs[(!).(keeps)])
