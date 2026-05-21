@@ -58,11 +58,6 @@ function filter_and_align(ref_file, query_file, functionals_file, nonfunctionals
     ref_seq=ref_seqs[1]
     nams, seqs = read_fasta(query_file)
     seqs=(degap).(seqs)
-    # maybe collapse first to allow codon alignment to complete
-    col_seqs, col_sizes, col_names = variant_collapse(seqs,prefix = "$(sample)_v")
-    println("$(basename(query_file)[1:end-6]): collapsing to $(length(col_seqs)) sequences")
-    seqs=col_seqs
-    nams=col_names
     start_count = length(seqs)
     reject_seqs=[]
     reject_nams=[]
